@@ -1,0 +1,94 @@
+﻿@page "/"
+@using System.Text.Json;
+
+<h2>Derive a Key</h2>
+
+<div class="mb-3">
+    <label for="exampleFormControlInput1" class="form-label">Key Derivation Password</label>
+    <input type="text" @bind="_pass" class="form-control" id="exampleFormControlInput1" placeholder="Key Derivation Password">
+</div>
+
+<div class="mb-3">
+    <button type="button" class="btn btn-primary" @onclick="HandleButton">Derive Key</button>
+</div>
+
+<h2>Encrypt/Decrypt</h2>
+
+<div class="mb-3">
+    <label for="exampleFormControlTextarea1" class="form-label">JWK</label>
+    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" @bind="_jwk">
+
+    </textarea>
+</div>
+
+<div class="row">
+    <div class="col">
+        <label for="exampleFormControlTextarea1" class="form-label">Plaintext</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" @bind="_plaintext">
+
+        </textarea>
+        @if (_jwk != null)
+        {
+            <div class="mb-3 mt-3">
+                <button type="button" class="btn btn-primary" @onclick="HandleButton2">Encrypt</button>
+            </div>
+        }
+    </div>
+    <div class="col">
+        <label for="exampleFormControlTextarea1" class="form-label">Ciphertext</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" @bind="_ciphertext">
+
+        </textarea>
+        @if (_jwk != null && _ciphertext != null)
+        {
+            <div class="mb-3 mt-3">
+                <button type="button" class="btn btn-primary" @onclick="HandleButton3">Decrypt</button>
+            </div>
+        }
+
+    </div>
+    <div class="col">
+        <label for="exampleFormControlTextarea1" class="form-label">Decrypted</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" @bind="_decrypted">
+
+        </textarea>
+    </div>
+</div>
+
+
+@code {
+    // Yes, the bootstrap is copy/paste from the documentation and the labels don't make any sense.
+    // No, I don't plan to fix that.
+
+    [Inject]
+    public SubtleBlazorService _crypto { get; set; }
+
+    public string _pass { get; set; } = "1234";
+    public string _plaintext { get; set; }
+    public string _ciphertext { get; set; }
+    public string _decrypted { get; set; }
+
+    public string _jwk { get; set; }
+
+    public async Task HandleButton()
+    {
+        var result = await _crypto.DeriveKeyAsync(_pass, "1234567890");
+        _jwk = JsonSerializer.Serialize(result);
+    }
+
+    public async Task HandleButton2()
+    {
+        var jwk = JsonSerializer.Deserialize<JWK>(_jwk);
+        var result = await _crypto.EncryptAsync(jwk, _plaintext);
+        _ciphertext = JsonSerializer.Serialize(result);
+    }
+
+
+    public async Task HandleButton3()
+    {
+        var jwk = JsonSerializer.Deserialize<JWK>(_jwk);
+        var ciphertext = JsonSerializer.Deserialize<EncryptionResult>(_ciphertext);
+        var decryptionResult = await _crypto.DecryptAsync(jwk, ciphertext.IV, ciphertext.CipherText);
+        _decrypted = decryptionResult.Succeeded ? decryptionResult.PlainText : $"Decryption error: {decryptionResult.ErrorMessage}";
+    }
+}
