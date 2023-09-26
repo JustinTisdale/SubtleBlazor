@@ -11,5 +11,10 @@
         public string[] key_ops { get; set; }
 
         public string kty { get; set; }
+
+        /// <summary>
+        /// concat alg + ext + k + key_ops + kty and compute SHA-256 hash.
+        /// </summary>
+        public string fingerprint { get; set; }
     }
 }

@@ -7,5 +7,7 @@
         public static readonly string JSMethod_Encrypt = "subtleBlazorEncrypt";
         public static readonly string JSMethod_Decrypt = "subtleBlazorDecrypt";
         public static readonly string JSMethod_DeriveKey = "subtleBlazorDeriveKey";
+        public static readonly string JSMethod_ComputeHash = "subtleBlazorDigest";
+        public static readonly string JSMethod_GenerateBytes = "subtleBlazorGenerateBytes";
     }
 }

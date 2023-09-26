@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	<Version>0.1.1</Version>
+	<Version>0.2.0</Version>
 	<Authors>Justin Tisdale</Authors>
 	<PackageProjectUrl>https://github.com/JustinTisdale/SubtleBlazor</PackageProjectUrl>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>

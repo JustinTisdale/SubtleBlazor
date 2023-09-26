@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using System.Text.Json;
+@using System.Text;
 
 <h2>Derive a Key</h2>
 
@@ -55,6 +56,38 @@
     </div>
 </div>
 
+<h2 class="mt-2">Hash</h2>
+
+<div class="mb-3">
+    <label for="exampleFormControlInput1" class="form-label">Text</label>
+    <input type="text" @bind="_hashText" class="form-control" id="exampleFormControlInput1" placeholder="Text to Hash">
+</div>
+
+<div class="mb-3">
+    <button type="button" class="btn btn-primary" @onclick="HandleButton_Hash">Hash</button>
+</div>
+
+<div class="mb-3">
+    <button type="button" class="btn btn-primary" @onclick="HandleButton_GenerateBytes">Generate Random Bytes</button>
+</div>
+
+@if(_randomBytes != null)
+{
+    <div class="mb-3">
+        Random Bytes: @(_randomBytes)
+    </div>
+}
+
+@if(_hashResult != null)
+{
+    <div class="mb-3">
+        Subtle Crypto Hash: @(_hashResult)
+        <br>
+        .Net Hash: @Convert.ToBase64String(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(_hashText)))
+    </div>
+}
+
+
 
 @code {
     // Yes, the bootstrap is copy/paste from the documentation and the labels don't make any sense.
@@ -68,7 +101,12 @@
     public string _ciphertext { get; set; }
     public string _decrypted { get; set; }
 
+    public string _hashText { get; set; } = "example text";
+    public string _hashResult { get; set; }
+
     public string _jwk { get; set; }
+
+    public string _randomBytes { get; set; }
 
     public async Task HandleButton()
     {
@@ -90,5 +128,15 @@
         var ciphertext = JsonSerializer.Deserialize<EncryptionResult>(_ciphertext);
         var decryptionResult = await _crypto.DecryptAsync(jwk, ciphertext.IV, ciphertext.CipherText);
         _decrypted = decryptionResult.Succeeded ? decryptionResult.PlainText : $"Decryption error: {decryptionResult.ErrorMessage}";
+    }
+
+    public async Task HandleButton_Hash()
+    {
+        _hashResult = await _crypto.ComputeSHA256HashAsync(_hashText);
+    }
+
+    public async Task HandleButton_GenerateBytes()
+    {
+        _randomBytes = Convert.ToBase64String(await _crypto.GenerateRandomBytesAsync(32));
     }
 }

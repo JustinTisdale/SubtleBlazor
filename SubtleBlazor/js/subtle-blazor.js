@@ -100,3 +100,16 @@ async function subtleBlazorDecrypt(key, iv, ciphertext) {
 
     return resultString;
 };
+
+async function subtleBlazorDigest(plaintext, alg) {
+    const enc = new TextEncoder();
+    const encoded = enc.encode(plaintext);
+    const hash = await window.crypto.subtle.digest(alg, encoded);
+    return arrayBufferToBase64String(hash);
+};
+
+async function subtleBlazorGenerateBytes(length) {
+    const array = new Uint8Array(length);
+    window.crypto.getRandomValues(array);
+    return array;
+};

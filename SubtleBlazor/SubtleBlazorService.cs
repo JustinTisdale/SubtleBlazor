@@ -92,5 +92,33 @@ namespace SubtleBlazor
                 return null;
             }
         }
+
+        public async Task<string> ComputeSHA256HashAsync(string plaintext)
+        {
+            try
+            {
+                await InjectLibraryJSAsync();
+                var result = await _jsRuntime.InvokeAsync<string>(Constants.JSMethod_ComputeHash, plaintext, "SHA-256");
+                return result;
+            }
+            catch (Exception err)
+            {
+                return null;
+            }
+        }
+
+        public async Task<byte[]> GenerateRandomBytesAsync(int length)
+        {
+            try
+            {
+                await InjectLibraryJSAsync();
+                var result = await _jsRuntime.InvokeAsync<byte[]>(Constants.JSMethod_GenerateBytes, length);
+                return result;
+            }
+            catch (Exception err)
+            {
+                return null;
+            }
+        }
     }
 }
