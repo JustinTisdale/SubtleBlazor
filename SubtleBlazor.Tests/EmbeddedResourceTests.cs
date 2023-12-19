@@ -56,8 +56,8 @@ namespace SubtleBlazor.Tests
             // Base64 decode the ciphertext and IV
             byte[] cipherTextBytes = Convert.FromBase64String(cipherText);
             byte[] ivBytes = Convert.FromBase64String(iv);
-            byte[] tagBytes = cipherTextBytes.Take(16).ToArray();
-            byte[] untaggedCipherTextBytes = cipherTextBytes.Skip(16).ToArray();
+            byte[] tagBytes = cipherTextBytes.Skip(cipherTextBytes.Length - 16).Take(16).ToArray();
+            byte[] untaggedCipherTextBytes = cipherTextBytes.SkipLast(16).ToArray();
 
             // Create a buffer for the plaintext
             byte[] plainTextBytes = new byte[untaggedCipherTextBytes.Length];
